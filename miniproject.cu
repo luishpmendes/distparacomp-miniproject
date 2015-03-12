@@ -417,7 +417,7 @@ int main (int argc, char** argv) {
     cutilCheckError(cutCreateTimer(&timer));
     cutilCheckError(cutStartTimer(timer));
 
-    device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution);
+    device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
 
     // loop {
     // start here
