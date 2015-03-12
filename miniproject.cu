@@ -14,7 +14,7 @@
 #define U 128.0
 #define T 4096
 #define TAU 64
-#define R 128
+#define R 16
 
 using namespace std;
 
