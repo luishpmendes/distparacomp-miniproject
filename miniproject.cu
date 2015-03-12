@@ -14,6 +14,7 @@
 #define U 128.0
 #define T 4096
 #define TAU 64
+#define R 128
 
 using namespace std;
 
@@ -149,7 +150,6 @@ void host_findOptimum (float * solution) {
 }
 
 __device__ float device_randomUniform (curandState * state, float a, float b) {
-    //float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     float result = curand_uniform(state);
     float min, max;
     if (a < b) {
@@ -168,10 +168,8 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
 __device__ int device_randInt (curandState * state, int a, int b) {
     int result;
     if (a <= b) {
-        //result = a + rand() % (b - a);
         result = a + curand(state) % (b - a);
     } else {
-        //result = b + rand() % (a - b);
         result = b + curand(state) % (a - b);
     }
     return result;
@@ -313,11 +311,11 @@ int main (int argc, char** argv) {
     // allocate host memory
     unsigned int solutionMemSize = N * sizeof(float);
 
-//    float * hostSolution = (float *) malloc(solutionMemSize);
     float hostSolution[N];
-
-//    float * hostDeviceSolution = (float *) malloc(solutionMemSize);
     float hostDeviceSolution[N];
+
+    float deviceSolutionValue[R];
+    unsigned int deviceSolutonTime[R];
 
     printf("Solution size : %d\n", N);
     printf("Grid size     : %d\n", GRIDSIZE);
@@ -328,13 +326,30 @@ int main (int argc, char** argv) {
     cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
     // set up kernel for execution
-//    printf("Run %d Kernels.\n\n", ITERS);
-    unsigned int timer = 0;
-    cutilCheckError(cutCreateTimer(&timer));
-    cutilCheckError(cutStartTimer(timer));
+    printf("Run %d Kernels.\n\n", R);
 
-    device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
+    for (int r = 0; r < R; r++) {
+        unsigned int timer = 0;
+        cutilCheckError(cutCreateTimer(&timer));
+        cutilCheckError(cutStartTimer(timer));
 
+        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
+
+        // check if kernel execution generated and error
+        cutilCheckMsg("Kernel execution failed");
+
+        // wait for device to finish
+        cudaThreadSynchronize();
+
+        // stop and destroy timer
+        cutilCheckError(cutStopTimer(timer));
+        deviceSolutonTime[r] = cutGetTimerValue(timer)/(1000.0);
+        cutilCheckError(cutDeleteTimer(timer));
+
+        // copy result from device to host
+        cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
+        deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution)
+    }
     // loop {
     // start here
 //    device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution);
@@ -343,30 +358,39 @@ int main (int argc, char** argv) {
     // copy the time delay
     // }
     // check if kernel execution generated and error
-    cutilCheckMsg("Kernel execution failed");
+//    cutilCheckMsg("Kernel execution failed");
 
     // wait for device to finish
-    cudaThreadSynchronize();
+//    cudaThreadSynchronize();
 
     // stop and destroy timer
-    cutilCheckError(cutStopTimer(timer));
-    double dSeconds = (cutGetTimerValue(timer)/1)/(1000.0);
+//    cutilCheckError(cutStopTimer(timer));
+//    double dSeconds = (cutGetTimerValue(timer)/1)/(1000.0);
 
     //Log througput
-    printf("Time = %.4f s\n", dSeconds);
-    cutilCheckError(cutDeleteTimer(timer));
+//    printf("Time = %.4f s\n", dSeconds);
+//    cutilCheckError(cutDeleteTimer(timer));
 
     // copy result from device to host
-    cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
+//    cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
 
     host_findOptimum(hostSolution);
 
+    float deviceAverageSolutionValue = 0.0;
+    float deviceAverageSolutonTime = 0.0;
+
+    for (int r = 0; r < R; r++) {
+        deviceAverageSolutionValue += deviceSolutionValue[r];
+        deviceAverageSolutionTime += deviceSolutionTime[r];
+    }
+
+    deviceAverageSolutionValue /= R;
+    deviceAverageSolutionTime /= R;
+
     printf("host: %f\n", host_objectiveFunction(hostSolution));
-    printf("device: %f\n", host_objectiveFunction(hostDeviceSolution));
+    printf("device: %f\n", deviceAverageSolutionValue);
 
     // clean up memory
-    //free(hostDeviceSolution);
-    //free(hostSolution);
     cutilSafeCall(cudaFree(deviceSolution));
 
     // exit and clean up device status
