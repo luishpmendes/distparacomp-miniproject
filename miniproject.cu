@@ -313,6 +313,9 @@ int main (int argc, char** argv) {
 
     float hostSolution[N];
 
+    float deviceSolutionValue[R];
+    unsigned int deviceSolutionTime[R];
+
     printf("Solution size : %d\n", N);
     printf("Grid size     : %d\n", GRIDSIZE);
     printf("Block size    : %d\n", BLOCKSIZE);
@@ -323,9 +326,6 @@ int main (int argc, char** argv) {
 
     // set up kernel for execution
     printf("Run %d Kernels.\n\n", R);
-
-    float deviceAverageSolutionValue = 0.0;
-    float deviceAverageSolutionTime = 0.0;
 
     for (int r = 0; r < R; r++) {
         printf("r == %d\n", r);
@@ -344,12 +344,12 @@ int main (int argc, char** argv) {
 
         // stop and destroy timer
         cutilCheckError(cutStopTimer(timer));
-        deviceAverageSolutionTime += cutGetTimerValue(timer)/(1000.0);
+        deviceSolutionTime[r] = cutGetTimerValue(timer)/(1000.0);
         cutilCheckError(cutDeleteTimer(timer));
 
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
-        deviceAverageSolutionValue += host_objectiveFunction(hostDeviceSolution);
+        deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
     }
     // loop {
     // start here
@@ -376,6 +376,14 @@ int main (int argc, char** argv) {
 //    cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
 
     host_findOptimum(hostSolution);
+
+    float deviceAverageSolutionValue = 0.0;
+    float deviceAverageSolutionTime = 0.0;
+
+    for (int r = 0; r < R; r++) {
+        deviceAverageSolutionValue += deviceSolutionValue[r];
+        deviceAverageSolutionTime += deviceSolutionTime[r];
+    }
 
     deviceAverageSolutionValue /= R;
     deviceAverageSolutionTime /= R;
