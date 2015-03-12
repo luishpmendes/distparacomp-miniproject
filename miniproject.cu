@@ -377,11 +377,6 @@ int main (int argc, char** argv) {
 
     host_findOptimum(hostSolution);
 
-    for (int r = 0; r < R; r++) {
-        deviceAverageSolutionValue += deviceSolutionValue[r];
-        deviceAverageSolutionTime += deviceSolutionTime[r];
-    }
-
     deviceAverageSolutionValue /= R;
     deviceAverageSolutionTime /= R;
 
