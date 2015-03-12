@@ -192,7 +192,7 @@ void host_findOptimum (float * solution) {
     }
 }
 
-__device__ float device_randomUniform (curandState state, float a, float b) {
+__device__ float device_randomUniform (curandState * state, float a, float b) {
     //float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     float result = curand_uniform(state);
     float min, max;
@@ -209,7 +209,7 @@ __device__ float device_randomUniform (curandState state, float a, float b) {
     return result;
 }
 
-__device__ int device_randInt (curandState state, int a, int b) {
+__device__ int device_randInt (curandState * state, int a, int b) {
     int result;
     if (a <= b) {
         //result = a + rand() % (b - a);
@@ -268,9 +268,9 @@ __device__ float device_objectiveFunction (float * x) {
     return result;
 }
 
-__device__ void device_initialSolution (float * x, curandState state) {
+__device__ void device_initialSolution (curandState * state, float * x) {
     for (int i = 0; i < N; i++) {
-        x[i] = device_randomUniform(curandState state, L, U);
+        x[i] = device_randomUniform(state, L, U);
     }
 }
 /*
@@ -290,7 +290,7 @@ __device__ void device_blxAlphaCrossover (float * h, float * x0, float * x1, flo
 }
 */
 
-__device__ void device_crossover (float * h, curandState state, float * x0, float * x1) {
+__device__ void device_crossover (curandState * state, float * h, float * x0, float * x1) {
     for (int i = 0; i < N; i++) {
         h[i] = device_randomUniform(state, x0[i], x1[i]);
     }
@@ -322,7 +322,7 @@ __device__ void device_nonUniformMutation (float * y, float * x, int t, float b)
 }
 */
 
-__device__ void device_mutation (float * y, curandState state, float * x) {
+__device__ void device_mutation (curandState * state, float * y, float * x) {
     int k = device_randInt(0, N);
     for (int i = 0; i < N; i++) {
         if (i == k) {
@@ -346,9 +346,9 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     device_initialSolution(x1, state);
     for (int t = 0; t < T; t++) {
         float h[N];
-        device_crossover(h, state, x0, x1);
+        device_crossover(&state, h, x0, x1);
         float y[N];
-        device_mutation(y, state, h);
+        device_mutation(&state, y, h);
         if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) {
             if (device_objectiveFunction(x0) > device_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
