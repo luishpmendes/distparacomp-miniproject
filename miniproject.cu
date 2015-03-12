@@ -361,6 +361,9 @@ int main (int argc, char** argv) {
         deviceAverageSolutionTime += deviceSolutionTime[r];
     }
 
+    deviceAverageSolutionValue /= R;
+    deviceAverageSolutionTime /= R;
+
     for (int r = 0; r < R; r++) {
         clock_t begin, end;
         float hostSolution[N];
@@ -382,12 +385,13 @@ int main (int argc, char** argv) {
         hostAverageSolutionTime += hostSolutionTime[r];
     }
 
+    hostAverageSolutionValue /= R;
+    hostAverageSolutionTime /= R;
+
     host_findOptimum(hostSolution);
 
-    deviceAverageSolutionValue /= R;
-    deviceAverageSolutionTime /= R;
 
-    printf("Host objective function value: %f\n", host_objectiveFunction(hostSolution));
+    printf("Host objective function value: %f\n", hostAverageSolutionValue);
     printf("Device objective function value: %f\n", deviceAverageSolutionValue);
 
     // clean up memory
