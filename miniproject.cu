@@ -189,7 +189,7 @@ void host_findOptimum (float * solution) {
     }
 }
 
-void device_findOptimum (float * solution) {
+__global__ void device_findOptimum (float * solution) {
     // initialize shared mem
     float x0[N];
     float x1[N];
