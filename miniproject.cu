@@ -313,9 +313,11 @@ int main (int argc, char** argv) {
     // allocate host memory
     unsigned int solutionMemSize = N * sizeof(float);
 
-    float * hostSolution = (float *) malloc(solutionMemSize);
+//    float * hostSolution = (float *) malloc(solutionMemSize);
+    float hostSolution[N];
 
-    float * hostDeviceSolution = (float *) malloc(solutionMemSize);
+//    float * hostDeviceSolution = (float *) malloc(solutionMemSize);
+    float hostDeviceSolution[N]
 
     printf("Solution size : %d\n", N);
     printf("Grid size     : %d\n", GRIDSIZE);
@@ -363,8 +365,8 @@ int main (int argc, char** argv) {
     printf("device: %f\n", host_objectiveFunction(hostDeviceSolution));
 
     // clean up memory
-    free(hostDeviceSolution);
-    free(hostSolution);
+    //free(hostDeviceSolution);
+    //free(hostSolution);
     cutilSafeCall(cudaFree(deviceSolution));
 
     // exit and clean up device status
