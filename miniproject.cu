@@ -372,7 +372,7 @@ int main (int argc, char** argv) {
         host_findOptimum(hostSolution);
         end = clock();
 
-        hostSolutionTime[r] = (end - begin) / CLOCKS_PER_SEC;
+        hostSolutionTime[r] = static_cast <float> (end - begin) / static_cast <float> (CLOCKS_PER_SEC);
         printf("tempo %f\n", hostSolutionTime[r]);
         hostSolutionValue[r] = host_objectiveFunction(hostSolution);        
     }
