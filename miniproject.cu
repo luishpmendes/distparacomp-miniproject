@@ -397,7 +397,6 @@ int main (int argc, char** argv) {
     printf("Run %d Kernels.\n\n", R);
 
     for (int r = 0; r < R; r++) {
-        printf("r == %d\n", r);
         float hostDeviceSolution[N];
         unsigned int timer = 0;
         cutilCheckError(cutCreateTimer(&timer));
@@ -458,8 +457,8 @@ int main (int argc, char** argv) {
 
     printf("Host objective function value : %f\n", hostAverageSolutionValue);
     printf("Host time: %fs\n", hostAverageSolutionTime);
-    printf("Device objective function value: %fs\n", deviceAverageSolutionValue);
-    printf("Device time: %f\n", deviceAverageSolutionTime);
+    printf("Device objective function value: %f\n", deviceAverageSolutionValue);
+    printf("Device time: %fs\n", deviceAverageSolutionTime);
 
     // clean up memory
     cutilSafeCall(cudaFree(deviceSolution));
