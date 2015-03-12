@@ -5,8 +5,6 @@
 #include <iostream>
 #include <vector>
 #include "cutil_inline.h"
-#include <cuda.h>
-#include <curand.h>
 #include <curand_kernel.h>
 
 #define GRIDSIZE 64
