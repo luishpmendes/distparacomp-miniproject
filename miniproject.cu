@@ -317,7 +317,7 @@ int main (int argc, char** argv) {
     float hostSolution[N];
 
 //    float * hostDeviceSolution = (float *) malloc(solutionMemSize);
-    float hostDeviceSolution[N]
+    float hostDeviceSolution[N];
 
     printf("Solution size : %d\n", N);
     printf("Grid size     : %d\n", GRIDSIZE);
