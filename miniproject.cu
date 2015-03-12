@@ -315,7 +315,7 @@ int main (int argc, char** argv) {
     float hostDeviceSolution[N];
 
     float deviceSolutionValue[R];
-    unsigned int deviceSolutonTime[R];
+    unsigned int deviceSolutionTime[R];
 
     printf("Solution size : %d\n", N);
     printf("Grid size     : %d\n", GRIDSIZE);
@@ -343,7 +343,7 @@ int main (int argc, char** argv) {
 
         // stop and destroy timer
         cutilCheckError(cutStopTimer(timer));
-        deviceSolutonTime[r] = cutGetTimerValue(timer)/(1000.0);
+        deviceSolutionTime[r] = cutGetTimerValue(timer)/(1000.0);
         cutilCheckError(cutDeleteTimer(timer));
 
         // copy result from device to host
