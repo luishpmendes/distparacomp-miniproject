@@ -189,11 +189,6 @@ void host_findOptimum (float * solution) {
     }
 }
 
-__global__ void device_seed (curandState * state, unsigned int seed) {
-    int id = blockIdx.x * blockDim.x + threadIdx.x;
-    curand_init(seed, id, 0, &state[id]);
-}
-
 __device__ float device_randomUniform (float a, float b) {
     //float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     float result = static_cast <float> (1.0) / static_cast <float> (RAND_MAX);
@@ -333,6 +328,11 @@ __device__ void device_mutation (float * y, float * x) {
             y[i] = x[i];
         }
     }
+}
+
+__global__ void device_seed (curandState * state, unsigned int seed) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    curand_init(seed, id, 0, &state[id]);
 }
 
 __global__ void device_findOptimum (float * solution) {
