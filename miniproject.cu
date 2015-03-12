@@ -189,6 +189,11 @@ void host_findOptimum (float * solution) {
     }
 }
 
+__global__ void device_seed (curandState * state, unsigned int seed) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    curand_init(seed, id, 0, &state[id]);
+}
+
 __device__ float device_randomUniform (float a, float b) {
     //float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     float result = static_cast <float> (1.0) / static_cast <float> (RAND_MAX);
@@ -438,7 +443,7 @@ int main (int argc, char** argv) {
     host_findOptimum(hostSolution);
 
     printf("host: %f\n", host_objectiveFunction(hostSolution));
-    printf("host: %f\n", host_objectiveFunction(hostDeviceSolution));
+    printf("device: %f\n", host_objectiveFunction(hostDeviceSolution));
 
     // clean up memory
     free(hostDeviceSolution);
