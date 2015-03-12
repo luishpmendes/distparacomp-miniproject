@@ -285,7 +285,7 @@ int main (int argc, char** argv) {
 
     // stop and destroy timer
     cutilCheckError(cutStopTimer(timer));
-    double dSeconds = (cutGetTimerValue(timer)/ITERS)/(1000.0);
+    double dSeconds = (cutGetTimerValue(timer)/1)/(1000.0);
 
     //Log througput
     printf("Time = %.4f s\n", dSeconds);
