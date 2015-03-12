@@ -248,7 +248,7 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
 __global__ void device_findOptimum (float * solution, unsigned int seed) {
     // initialize shared mem
 
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    //int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     curandState state;
     int id = blockIdx.x * blockDim.x + threadIdx.x;
