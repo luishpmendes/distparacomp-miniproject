@@ -16,7 +16,7 @@
 
 using namespace std;
 
-float randomUniform (float a, float b) {
+float host_randomUniform (float a, float b) {
     float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     float min, max;
     if (a < b) {
@@ -32,7 +32,7 @@ float randomUniform (float a, float b) {
     return result;
 }
 
-int randInt (int a, int b) {
+int host_randInt (int a, int b) {
     int result;
     if (a <= b) {
         result = a + rand() % (b - a);
@@ -43,7 +43,7 @@ int randInt (int a, int b) {
 }
 /*
 //Sphere function
-float objectiveFunction (float * x) {
+float host_objectiveFunction (float * x) {
     float result = 0.0;
     for (int i = 0; i < N; i++) {
         result += x[i] * x[i];
@@ -53,7 +53,7 @@ float objectiveFunction (float * x) {
 */
 /*
 
-float objectiveFunction (float * x) {
+float host_objectiveFunction (float * x) {
     float result = 0;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < i; j++) {
@@ -65,7 +65,7 @@ float objectiveFunction (float * x) {
 */
 /*
 //Griewank Function
-float objectiveFunction (float * x) {
+float host_objectiveFunction (float * x) {
     float result = 1;
     float sum = 0;
     float prod = 1;
@@ -80,7 +80,7 @@ float objectiveFunction (float * x) {
 }
 */
 //Rastrigin Function
-float objectiveFunction (float * x) {
+float host_objectiveFunction (float * x) {
     float result = 10*N;
     for (int i = 0; i < N; i++) {
         result += x[i] * x[i];
@@ -89,13 +89,13 @@ float objectiveFunction (float * x) {
     return result;
 }
 
-void initialSolution (float * x) {
+void host_initialSolution (float * x) {
     for (int i = 0; i < N; i++) {
-        x[i] = randomUniform(L, U);
+        x[i] = host_randomUniform(L, U);
     }
 }
 /*
-void blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
+void host_blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
     for (int i = 0; i < N; i++) {
         float hMin, hMax, I;
         if (x0[i] < x1[i]) {
@@ -106,20 +106,20 @@ void blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
             hMax = x0[i];
         }
         I = hMax - hMin;
-        h[i] = randomUniform(hMin - I * alpha, hMax + I * alpha);
+        h[i] = host_randomUniform(hMin - I * alpha, hMax + I * alpha);
     }
 }
 */
 
-void crossover (float * h, float * x0, float * x1) {
+void host_crossover (float * h, float * x0, float * x1) {
     for (int i = 0; i < N; i++) {
-        h[i] = randomUniform(x0[i], x1[i]);
+        h[i] = host_randomUniform(x0[i], x1[i]);
     }
 }
 
 /*
-float delta (int t, float y, float b) {
-    float result = randomUniform(0, 1);
+float host_delta (int t, float y, float b) {
+    float result = host_randomUniform(0, 1);
     result = pow (result, static_cast <float> (1.0 - static_cast <float> (t/T)));
     result = static_cast <float> (1 - result);
     result = pow (result, b);
@@ -127,14 +127,14 @@ float delta (int t, float y, float b) {
     return result;
 }
 
-void nonUniformMutation (float * y, float * x, int t, float b) {
-    int k = randInt(0, N);
+void host_nonUniformMutation (float * y, float * x, int t, float b) {
+    int k = host_randInt(0, N);
     for (int i = 0; i < N; i++) {
         if (i == k) {
-            if (randomUniform(0, 1) >= 0.5) {
-                y[i] = static_cast <float> (x[i] + delta(t, static_cast <float> (U - x[i]), b));
+            if (host_randomUniform(0, 1) >= 0.5) {
+                y[i] = static_cast <float> (x[i] + host_delta(t, static_cast <float> (U - x[i]), b));
             } else {
-                y[i] = static_cast <float> (x[i] - delta(t, static_cast <float> (x[i] - L), b));
+                y[i] = static_cast <float> (x[i] - host_delta(t, static_cast <float> (x[i] - L), b));
             }
         } else {
             y[i] = x[i];
@@ -143,11 +143,11 @@ void nonUniformMutation (float * y, float * x, int t, float b) {
 }
 */
 
-void mutation (float * y, float * x) {
-    int k = randInt(0, N);
+void host_mutation (float * y, float * x) {
+    int k = host_randInt(0, N);
     for (int i = 0; i < N; i++) {
         if (i == k) {
-            y[i] = randomUniform(L, U);
+            y[i] = host_randomUniform(L, U);
         } else {
             y[i] = x[i];
         }
@@ -157,28 +157,28 @@ void mutation (float * y, float * x) {
 void host_findOptimum (float * solution) {
     float x0[N];
     float x1[N];
-    initialSolution(x0);
-    initialSolution(x1);
+    host_initialSolution(x0);
+    host_initialSolution(x1);
     for (int t = 0; t < T; t++) {
         float h[N];
-        crossover(h, x0, x1);
+        host_crossover(h, x0, x1);
         float y[N];
-        mutation(y, h);
-        if (objectiveFunction(x0) > objectiveFunction(x1)) {
-            if (objectiveFunction(x0) > objectiveFunction(y)) {
+        host_mutation(y, h);
+        if (host_objectiveFunction(x0) > host_objectiveFunction(x1)) {
+            if (host_objectiveFunction(x0) > host_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
                     x0[i] = y[i];
                 }
             }
         } else {
-            if (objectiveFunction(x1) > objectiveFunction(y)) {
+            if (host_objectiveFunction(x1) > host_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
                     x1[i] = y[i];
                 }
             }
         }
     }
-    if (objectiveFunction(x0) < objectiveFunction(x1)) {
+    if (host_objectiveFunction(x0) < host_objectiveFunction(x1)) {
         for (int i = 0; i < N; i++) {
             solution[i] = x0[i];
         }
@@ -189,25 +189,163 @@ void host_findOptimum (float * solution) {
     }
 }
 
+__device__ float device_randomUniform (float a, float b) {
+    float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float min, max;
+    if (a < b) {
+        min = a;
+        max = b;
+    } else {
+        min = b;
+        max = a;
+    }
+    float diff = max - min;
+    result *= diff;
+    result += min;
+    return result;
+}
+
+__device__ int device_randInt (int a, int b) {
+    int result;
+    if (a <= b) {
+        result = a + rand() % (b - a);
+    } else {
+        result = b + rand() % (a - b);
+    }
+    return result;
+}
+/*
+//Sphere function
+__device__ float device_objectiveFunction (float * x) {
+    float result = 0.0;
+    for (int i = 0; i < N; i++) {
+        result += x[i] * x[i];
+    }
+    return result;
+}
+*/
+/*
+
+__device__ float device_objectiveFunction (float * x) {
+    float result = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < i; j++) {
+            result += x[j] * x[j];
+        }
+    }
+    return result;
+}
+*/
+/*
+//Griewank Function
+__device__ float device_objectiveFunction (float * x) {
+    float result = 1;
+    float sum = 0;
+    float prod = 1;
+    for (int i = 0; i < N; i++) {
+        sum += x[i] * x[i];
+        prod *= cos(x[i]/sqrt(i+1));
+    }
+    sum /= 4000;
+    result += sum;
+    result -= prod;
+    return result;
+}
+*/
+//Rastrigin Function
+__device__ float device_objectiveFunction (float * x) {
+    float result = 10*N;
+    for (int i = 0; i < N; i++) {
+        result += x[i] * x[i];
+        result -= 10*cos(2*M_PI*x[i]);
+    }
+    return result;
+}
+
+__device__ void device_initialSolution (float * x) {
+    for (int i = 0; i < N; i++) {
+        x[i] = device_randomUniform(L, U);
+    }
+}
+/*
+__device__ void device_blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
+    for (int i = 0; i < N; i++) {
+        float hMin, hMax, I;
+        if (x0[i] < x1[i]) {
+            hMin = x0[i];
+            hMax = x1[i];
+        } else {
+            hMin = x1[i];
+            hMax = x0[i];
+        }
+        I = hMax - hMin;
+        h[i] = device_randomUniform(hMin - I * alpha, hMax + I * alpha);
+    }
+}
+*/
+
+__device__ void device_crossover (float * h, float * x0, float * x1) {
+    for (int i = 0; i < N; i++) {
+        h[i] = device_randomUniform(x0[i], x1[i]);
+    }
+}
+
+/*
+__device__ float device_delta (int t, float y, float b) {
+    float result = device_randomUniform(0, 1);
+    result = pow (result, static_cast <float> (1.0 - static_cast <float> (t/T)));
+    result = static_cast <float> (1 - result);
+    result = pow (result, b);
+    result = static_cast <float> (y * result);
+    return result;
+}
+
+__device__ void device_nonUniformMutation (float * y, float * x, int t, float b) {
+    int k = device_randInt(0, N);
+    for (int i = 0; i < N; i++) {
+        if (i == k) {
+            if (device_randomUniform(0, 1) >= 0.5) {
+                y[i] = static_cast <float> (x[i] + device_delta(t, static_cast <float> (U - x[i]), b));
+            } else {
+                y[i] = static_cast <float> (x[i] - device_delta(t, static_cast <float> (x[i] - L), b));
+            }
+        } else {
+            y[i] = x[i];
+        }
+    }
+}
+*/
+
+__device__ void device_mutation (float * y, float * x) {
+    int k = device_randInt(0, N);
+    for (int i = 0; i < N; i++) {
+        if (i == k) {
+            y[i] = device_randomUniform(L, U);
+        } else {
+            y[i] = x[i];
+        }
+    }
+}
+
 __global__ void device_findOptimum (float * solution) {
     // initialize shared mem
     float x0[N];
     float x1[N];
-    initialSolution(x0);
-    initialSolution(x1);
+    device_initialSolution(x0);
+    device_initialSolution(x1);
     for (int t = 0; t < T; t++) {
         float h[N];
-        crossover(h, x0, x1);
+        device_crossover(h, x0, x1);
         float y[N];
-        mutation(y, h);
-        if (objectiveFunction(x0) > objectiveFunction(x1)) {
-            if (objectiveFunction(x0) > objectiveFunction(y)) {
+        device_mutation(y, h);
+        if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) {
+            if (device_objectiveFunction(x0) > device_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
                     x0[i] = y[i];
                 }
             }
         } else {
-            if (objectiveFunction(x1) > objectiveFunction(y)) {
+            if (device_objectiveFunction(x1) > device_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
                     x1[i] = y[i];
                 }
@@ -220,7 +358,7 @@ __global__ void device_findOptimum (float * solution) {
                 read from share mem // we replace our worst individual only if the one we recieve is better
         */
     }
-    if (objectiveFunction(x0) < objectiveFunction(x1)) {
+    if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) {
         for (int i = 0; i < N; i++) {
             solution[i] = x0[i];
         }
