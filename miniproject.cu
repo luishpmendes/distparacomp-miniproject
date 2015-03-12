@@ -97,54 +97,12 @@ void host_initialSolution (float * x) {
         x[i] = host_randomUniform(L, U);
     }
 }
-/*
-void host_blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
-    for (int i = 0; i < N; i++) {
-        float hMin, hMax, I;
-        if (x0[i] < x1[i]) {
-            hMin = x0[i];
-            hMax = x1[i];
-        } else {
-            hMin = x1[i];
-            hMax = x0[i];
-        }
-        I = hMax - hMin;
-        h[i] = host_randomUniform(hMin - I * alpha, hMax + I * alpha);
-    }
-}
-*/
 
 void host_crossover (float * h, float * x0, float * x1) {
     for (int i = 0; i < N; i++) {
         h[i] = host_randomUniform(x0[i], x1[i]);
     }
 }
-
-/*
-float host_delta (int t, float y, float b) {
-    float result = host_randomUniform(0, 1);
-    result = pow (result, static_cast <float> (1.0 - static_cast <float> (t/T)));
-    result = static_cast <float> (1 - result);
-    result = pow (result, b);
-    result = static_cast <float> (y * result);
-    return result;
-}
-
-void host_nonUniformMutation (float * y, float * x, int t, float b) {
-    int k = host_randInt(0, N);
-    for (int i = 0; i < N; i++) {
-        if (i == k) {
-            if (host_randomUniform(0, 1) >= 0.5) {
-                y[i] = static_cast <float> (x[i] + host_delta(t, static_cast <float> (U - x[i]), b));
-            } else {
-                y[i] = static_cast <float> (x[i] - host_delta(t, static_cast <float> (x[i] - L), b));
-            }
-        } else {
-            y[i] = x[i];
-        }
-    }
-}
-*/
 
 void host_mutation (float * y, float * x) {
     int k = host_randInt(0, N);
@@ -273,54 +231,12 @@ __device__ void device_initialSolution (curandState * state, float * x) {
         x[i] = device_randomUniform(state, L, U);
     }
 }
-/*
-__device__ void device_blxAlphaCrossover (float * h, float * x0, float * x1, float alpha) {
-    for (int i = 0; i < N; i++) {
-        float hMin, hMax, I;
-        if (x0[i] < x1[i]) {
-            hMin = x0[i];
-            hMax = x1[i];
-        } else {
-            hMin = x1[i];
-            hMax = x0[i];
-        }
-        I = hMax - hMin;
-        h[i] = device_randomUniform(hMin - I * alpha, hMax + I * alpha);
-    }
-}
-*/
 
 __device__ void device_crossover (curandState * state, float * h, float * x0, float * x1) {
     for (int i = 0; i < N; i++) {
         h[i] = device_randomUniform(state, x0[i], x1[i]);
     }
 }
-
-/*
-__device__ float device_delta (int t, float y, float b) {
-    float result = device_randomUniform(0, 1);
-    result = pow (result, static_cast <float> (1.0 - static_cast <float> (t/T)));
-    result = static_cast <float> (1 - result);
-    result = pow (result, b);
-    result = static_cast <float> (y * result);
-    return result;
-}
-
-__device__ void device_nonUniformMutation (float * y, float * x, int t, float b) {
-    int k = device_randInt(0, N);
-    for (int i = 0; i < N; i++) {
-        if (i == k) {
-            if (device_randomUniform(0, 1) >= 0.5) {
-                y[i] = static_cast <float> (x[i] + device_delta(t, static_cast <float> (U - x[i]), b));
-            } else {
-                y[i] = static_cast <float> (x[i] - device_delta(t, static_cast <float> (x[i] - L), b));
-            }
-        } else {
-            y[i] = x[i];
-        }
-    }
-}
-*/
 
 __device__ void device_mutation (curandState * state, float * y, float * x) {
     int k = device_randInt(state, 0, N);
