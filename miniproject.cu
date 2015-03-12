@@ -438,7 +438,7 @@ int main (int argc, char** argv) {
     host_findOptimum(hostSolution);
 
     printf("host: %f\n", host_objectiveFunction(hostSolution));
-    printf("host: %f\n", device_objectiveFunction(hostDeviceSolution));
+    printf("host: %f\n", host_objectiveFunction(hostDeviceSolution));
 
     // clean up memory
     free(hostDeviceSolution);
