@@ -388,9 +388,6 @@ int main (int argc, char** argv) {
     hostAverageSolutionValue /= R;
     hostAverageSolutionTime /= R;
 
-    host_findOptimum(hostSolution);
-
-
     printf("Host objective function value: %f\n", hostAverageSolutionValue);
     printf("Device objective function value: %f\n", deviceAverageSolutionValue);
 
