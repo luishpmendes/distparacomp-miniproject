@@ -440,7 +440,6 @@ int main (int argc, char** argv) {
         end = clock();
 
         hostSolutionTime[r] = static_cast <float> (end - begin) / static_cast <float> (CLOCKS_PER_SEC);
-        printf("tempo %f\n", hostSolutionTime[r]);
         hostSolutionValue[r] = host_objectiveFunction(hostSolution);
     }
 
