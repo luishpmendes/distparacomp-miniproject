@@ -210,10 +210,10 @@ __device__ int device_randInt (int a, int b) {
     int result;
     if (a <= b) {
         //result = a + rand() % (b - a);
-        result = a + 1.0 % (b - a);
+        result = a + 1 % (b - a);
     } else {
         //result = b + rand() % (a - b);
-        result = b + 1.0 % (a - b);
+        result = b + 1 % (a - b);
     }
     return result;
 }
