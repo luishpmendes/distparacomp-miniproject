@@ -190,7 +190,8 @@ void host_findOptimum (float * solution) {
 }
 
 __device__ float device_randomUniform (float a, float b) {
-    float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    //float result = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float result = static_cast <float> (1.0) / static_cast <float> (RAND_MAX);
     float min, max;
     if (a < b) {
         min = a;
@@ -208,9 +209,11 @@ __device__ float device_randomUniform (float a, float b) {
 __device__ int device_randInt (int a, int b) {
     int result;
     if (a <= b) {
-        result = a + rand() % (b - a);
+        //result = a + rand() % (b - a);
+        result = a + 1.0 % (b - a);
     } else {
-        result = b + rand() % (a - b);
+        //result = b + rand() % (a - b);
+        result = b + 1.0 % (a - b);
     }
     return result;
 }
