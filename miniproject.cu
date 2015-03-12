@@ -333,13 +333,13 @@ __device__ void device_mutation (float * y, float * x) {
     }
 }
 
-__global__ void device_seed (curandState * state, unsigned int seed) {
-    int id = blockIdx.x * blockDim.x + threadIdx.x;
-    curand_init(seed, id, 0, &state[id]);
-}
-
-__global__ void device_findOptimum (float * solution) {
+__global__ void device_findOptimum (float * solution, unsigned int seed) {
     // initialize shared mem
+
+    curandState state;
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    curand_init(seed, id, 0, &state);
+
     float x0[N];
     float x1[N];
     device_initialSolution(x0);
