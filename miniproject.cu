@@ -348,7 +348,7 @@ int main (int argc, char** argv) {
 
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
-        deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution)
+        deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
     }
     // loop {
     // start here
@@ -377,7 +377,7 @@ int main (int argc, char** argv) {
     host_findOptimum(hostSolution);
 
     float deviceAverageSolutionValue = 0.0;
-    float deviceAverageSolutonTime = 0.0;
+    float deviceAverageSolutionTime = 0.0;
 
     for (int r = 0; r < R; r++) {
         deviceAverageSolutionValue += deviceSolutionValue[r];
