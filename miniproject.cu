@@ -6,8 +6,8 @@
 #include <vector>
 #include "cutil_inline.h"
 
-#define GRIDSIZE 256
-#define BLOCKSIZE 64
+#define GRIDSIZE 64
+#define BLOCKSIZE 8
 #define N 16
 #define L -128.0
 #define U 128.0
