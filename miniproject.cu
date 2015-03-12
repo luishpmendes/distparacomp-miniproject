@@ -329,6 +329,7 @@ int main (int argc, char** argv) {
     printf("Run %d Kernels.\n\n", R);
 
     for (int r = 0; r < R; r++) {
+        printf("r == %d\n", r);
         unsigned int timer = 0;
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
