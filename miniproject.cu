@@ -8,7 +8,7 @@
 #include <curand_kernel.h>
 
 #define GRIDSIZE 64
-#define BLOCKSIZE 8
+#define BLOCKSIZE 16
 #define N 16
 #define L -128.0
 #define U 128.0
@@ -248,6 +248,8 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
 __global__ void device_findOptimum (float * solution, unsigned int seed) {
     // initialize shared mem
 
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
     curandState state;
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
@@ -274,13 +276,86 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
                 }
             }
         }
-        /*
-            if t mod tau == 0
-                write on shared mem // send the best individual -- the one with smallest objectiveFunction value
-                sync threads
-                read from share mem // we replace our worst individual only if the one we recieve is better
-        */
+        if (t % TAU) {
+            // send best indvidual to the next thread through the shared memory
+            // it should be something like this:
+            /*
+            if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
+                if (idx < GRIDSIZE*BLOCKSIZE - 1) {
+                    for (int i = 0; i < N; i++) {
+                        sharedMem[idx+1][i] = x0[i];
+                    }
+                } else { // last thread sends to first one
+                    for (int i = 0; i < N; i++) {
+                        sharedMem[0][i] = x0[i];
+                    }
+                }
+            } else { // x1 is the best
+                if (idx < GRIDSIZE*BLOCKSIZE - 1) {
+                    for (int i = 0; i < N; i++) {
+                        sharedMem[idx+1][i] = x1[i];
+                    }
+                } else { // last thread sends to first one
+                    for (int i = 0; i < N; i++) {
+                        sharedMem[0][i] = x1[i];
+                    }
+                }
+            }
+            */
+
+            __syncthreads();
+
+            // get the individual from previous thread and replace worst individual if it is worse than the received one
+            // it should be something like this:
+            /*
+            if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
+                if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[idx])) { // x0 is worse than the received one
+                    for (int i = 0; i < N; i++) {
+                        x0[i] = sharedMem[idx][i];
+                    }
+                }
+            } else { // x1 is the worst
+                if (device_objectiveFunction(x1) > device_objectiveFunction(sharedMem[idx])) { // x1 is worse than the received one
+                    for (int i = 0; i < N; i++) {
+                        x1[i] = sharedMem[idx][i];
+                    }
+                }
+            }
+            */
+        }
     }
+    // put the best individual on the shared memory
+    // it should be something like this:
+    /*
+    if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
+        for (int i = 0; i < N; i++) {
+            sharedMem[idx][i] = x0[i];
+        }
+    } else { // x1 is the best
+        for (int i = 0; i < N; i++) {
+            sharedMem[idx][i] = x1[i];
+        }
+    }
+    */
+
+    __syncthreads();
+
+    // delegate the task of picking the best of the best to thread zero
+    // it should be something like this:
+    /*
+        if (idx == 0) {
+            int idxBest = 0;
+            for (int i = 1; i < GRIDSIZE*BLOCKSIZE; i++) {
+                if (device_objectiveFunction(sharedMem[i]) < device_objectiveFunction(sharedMem[i])) {
+                    idBest = i;
+                }
+            }
+            for (int i = 0; i < N; i++) {
+                solution[i] = sharedMem[idxBest][i];
+            }
+        }
+    */
+    // remove the following code
     if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) {
         for (int i = 0; i < N; i++) {
             solution[i] = x0[i];
@@ -290,13 +365,6 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             solution[i] = x1[i];
         }
     }
-    /*
-        search all threads to find the best solution
-
-        each thread put its better indvidual on shared memory
-        sync threads
-        thread zero search the shared memory to find the best solution 
-    */
 }
 
 int main (int argc, char** argv) {
@@ -374,7 +442,7 @@ int main (int argc, char** argv) {
 
         hostSolutionTime[r] = static_cast <float> (end - begin) / static_cast <float> (CLOCKS_PER_SEC);
         printf("tempo %f\n", hostSolutionTime[r]);
-        hostSolutionValue[r] = host_objectiveFunction(hostSolution);        
+        hostSolutionValue[r] = host_objectiveFunction(hostSolution);
     }
 
     float hostAverageSolutionValue = 0.0;
@@ -388,8 +456,10 @@ int main (int argc, char** argv) {
     hostAverageSolutionValue /= R;
     hostAverageSolutionTime /= R;
 
-    printf("Host objective function value: %f\n", hostAverageSolutionValue);
-    printf("Device objective function value: %f\n", deviceAverageSolutionValue);
+    printf("Host objective function value : %f\n", hostAverageSolutionValue);
+    printf("Host time: %fs\n", hostAverageSolutionTime);
+    printf("Device objective function value: %fs\n", deviceAverageSolutionValue);
+    printf("Device time: %f\n", deviceAverageSolutionTime);
 
     // clean up memory
     cutilSafeCall(cudaFree(deviceSolution));
