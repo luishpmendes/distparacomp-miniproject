@@ -354,7 +354,7 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             }
         }
         for (int i = 0; i < N; i++) {
-            solution[i] = sharedMem[idxBest][i];
+            solution[i] = sharedMem[idBest][i];
         }
     }
     
