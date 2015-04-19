@@ -293,17 +293,17 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
                 }
             }
 
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is writing on memory\n", id);
-            #endif
+            //#if __CUDA_ARCH__>=200
+            //    printf("thread %d is writing on memory\n", id);
+            //#endif
 
             __syncthreads();
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
             
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is reading on memory\n", id);
-            #endif
+            //#if __CUDA_ARCH__>=200
+            //    printf("thread %d is reading on memory\n", id);
+            //#endif
 
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
@@ -418,6 +418,10 @@ int main (int argc, char** argv) {
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
+    }
+
+    for (int i = 0; i < N; ++i){
+        printf("solution[%d] = %f%s\n", i, hostDeviceSolution[i]);
     }
 
     float deviceAverageSolutionValue = 0.0;
