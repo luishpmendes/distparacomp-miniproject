@@ -54,44 +54,6 @@ float host_objectiveFunction (float * x) {
     return result;
 }
 
-/*
-float host_objectiveFunction (float * x) {
-    float result = 0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < i; j++) {
-            result += x[j] * x[j];
-        }
-    }
-    return result;
-}
-*/
-/*
-//Griewank Function
-float host_objectiveFunction (float * x) {
-    float result = 1;
-    float sum = 0;
-    float prod = 1;
-    for (int i = 0; i < N; i++) {
-        sum += x[i] * x[i];
-        prod *= cos(x[i]/sqrt(i+1));
-    }
-    sum /= 4000;
-    result += sum;
-    result -= prod;
-    return result;
-}
-*/
-/*
-//Rastrigin Function
-float host_objectiveFunction (float * x) {
-    float result = 10*N;
-    for (int i = 0; i < N; i++) {
-        result += x[i] * x[i];
-        result -= 10*cos(2*M_PI*x[i]);
-    }
-    return result;
-}
-*/
 void host_initialSolution (float * x) {
     for (int i = 0; i < N; i++) {
         x[i] = host_randomUniform(L, U);
@@ -190,45 +152,6 @@ __device__ float device_objectiveFunction (float * x) {
     }
     return result;
 }
-
-/*
-__device__ float device_objectiveFunction (float * x) {
-    float result = 0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < i; j++) {
-            result += x[j] * x[j];
-        }
-    }
-    return result;
-}
-*/
-/*
-//Griewank Function
-__device__ float device_objectiveFunction (float * x) {
-    float result = 1;
-    float sum = 0;
-    float prod = 1;
-    for (int i = 0; i < N; i++) {
-        sum += x[i] * x[i];
-        prod *= cosf(x[i]/sqrtf(i+1));
-    }
-    sum /= 4000;
-    result += sum;
-    result -= prod;
-    return result;
-}
-*/
-/*
-//Rastrigin Function
-__device__ float device_objectiveFunction (float * x) {
-    float result = 10*N;
-    for (int i = 0; i < N; i++) {
-        result += x[i] * x[i];
-        result -= 10*cos(2*M_PI*x[i]);
-    }
-    return result;
-}
-*/
 
 __device__ void device_initialSolution (curandState * state, float * x) {
     for (int i = 0; i < N; i++) {
@@ -356,19 +279,6 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
             solution[i] = sharedMem[idBest][i];
         }
     }
-    
-    // remove the following code
-    /*
-    if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) {
-        for (int i = 0; i < N; i++) {
-            solution[i] = x0[i];
-        }
-    } else {
-        for (int i = 0; i < N; i++) {
-            solution[i] = x1[i];
-        }
-    }
-    */
 }
 
 int main (int argc, char** argv) {
