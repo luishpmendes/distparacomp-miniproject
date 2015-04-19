@@ -6,7 +6,7 @@
 #include <vector>
 #include "cutil_inline.h"
 #include <curand_kernel.h>
-#include "cuPrintf.h"
+#include "util/cuPrintf.cu"
 
 #define GRIDSIZE 16
 #define BLOCKSIZE 8
@@ -255,7 +255,7 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
 
-    cuPrintf(“Value is: %d\n”, 2);
+    cuPrintf("Hello, world from the device!\n");
 
     float x0[N];
     float x1[N];
