@@ -6,8 +6,6 @@
 #include <vector>
 #include "cutil_inline.h"
 #include <curand_kernel.h>
-#include "cuPrintf.cu"
-#include "cuPrintf.cuh"
 
 #define GRIDSIZE 16
 #define BLOCKSIZE 8
@@ -247,7 +245,7 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
     }
 }
 
-__global__ void device_findOptimum (float * solution, unsigned int seed) {
+__global__ void device_findOptimum (float * solution, unsigned int seed, float * aux) {
     // initialize shared mem
 
     __shared__ float sharedMem[GRIDSIZE*BLOCKSIZE][N];
@@ -256,7 +254,7 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
 
-    cuPrintf("Hello, world from the device!\n");
+    *aux = *aux + 1;
 
     float x0[N];
     float x1[N];
@@ -411,7 +409,11 @@ int main (int argc, char** argv) {
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
 
-        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
+        float aux = 0;
+
+        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), &aux);
+
+        printf("aux = %f\n", aux);
 
         // check if kernel execution generated and error
         cutilCheckMsg("Kernel execution failed");
