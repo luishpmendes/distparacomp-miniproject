@@ -411,8 +411,8 @@ int main (int argc, char** argv) {
     cutilSafeCall(cudaGetDeviceProperties(&props, devID));
 
     // allocate host memory
-    unsigned int solutionMemSize = N * sizeof(float);
     unsigned int statesMemSize = GRIDSIZE * BLOCKSIZE * sizeof(curandState);
+    unsigned int solutionMemSize = N * sizeof(float);
 
     float deviceSolutionValue[R];
     float deviceSolutionTime[R];
@@ -425,11 +425,11 @@ int main (int argc, char** argv) {
     printf("Block size    : %d\n", BLOCKSIZE);
 
     // allocate device memory
-    float * deviceSolution;
-    cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
-
     curandState * deviceStates;
     cutilSafeCall(cudaMalloc((void**) &deviceStates, statesMemSize));
+
+    float * deviceSolution;
+    cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
     // set up kernel for execution
     printf("Run %d Kernels.\n\n", R);
@@ -504,6 +504,7 @@ int main (int argc, char** argv) {
 
     // clean up memory
     cutilSafeCall(cudaFree(deviceSolution));
+    cutilSafeCall(cudaFree(deviceStates));
 
     // exit and clean up device status
     cudaThreadExit();
