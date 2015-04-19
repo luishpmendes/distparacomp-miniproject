@@ -414,7 +414,6 @@ int main (int argc, char** argv) {
 
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
-        printf("sol = %f\n", hostDeviceSolution[0]);
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
     }
 
