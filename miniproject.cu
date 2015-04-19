@@ -13,8 +13,8 @@
 #define N 16
 #define L -128.0
 #define U 128.0
-#define T 4096
-#define TAU 64
+#define T 128
+#define TAU 16
 #define R 16
 
 using namespace std;
