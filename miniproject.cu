@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -254,7 +255,9 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
 
-    printf("id = %d\n", id);
+    #if __CUDA_ARCH__>=200
+        printf("id = %d\n", id);
+    #endif
 
     float x0[N];
     float x1[N];
