@@ -13,9 +13,9 @@
 #define N 10
 #define L -100.0
 #define U 100.0
-#define T 5000
+#define T 1000
 #define TAU 200
-#define R 25
+#define R 2
 
 using namespace std;
 
