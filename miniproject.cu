@@ -9,13 +9,13 @@
 #include <curand_kernel.h>
 
 #define GRIDSIZE 1
-#define BLOCKSIZE 16
+#define BLOCKSIZE 8
 #define N 16
 #define L -128.0
 #define U 128.0
 #define T 128
 #define TAU 16
-#define R 16
+#define R 8
 
 using namespace std;
 
@@ -286,16 +286,16 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x0[i];
-                    #if __CUDA_ARCH__>=200
-                        printf("%d : sharedMem[%d][%d] = x0[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x0[i]);
-                    #endif
+                    //#if __CUDA_ARCH__>=200
+                    //    printf("%d : sharedMem[%d][%d] = x0[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x0[i]);
+                    //#endif
                 }
             } else { // x1 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x1[i];
-                    #if __CUDA_ARCH__>=200
-                        printf("%d : sharedMem[%d][%d] = x1[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x1[i]);
-                    #endif
+                    //#if __CUDA_ARCH__>=200
+                    //    printf("%d : sharedMem[%d][%d] = x1[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x1[i]);
+                    //#endif
                 }
             }
 
@@ -307,18 +307,18 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x0[i] = sharedMem[id][i];
-                        #if __CUDA_ARCH__>=200
-                            printf("%d : x0[%d] = sharedMem[%d][%d] | x0[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
-                        #endif
+                        //#if __CUDA_ARCH__>=200
+                        //    printf("%d : x0[%d] = sharedMem[%d][%d] | x0[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
+                        //#endif
                     }
                 }
             } else { // x1 is the worst
                 if (device_objectiveFunction(x1) > device_objectiveFunction(sharedMem[id])) { // x1 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x1[i] = sharedMem[id][i];
-                        #if __CUDA_ARCH__>=200
-                            printf("%d : x1[%d] = sharedMem[%d][%d] | x1[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
-                        #endif
+                        //#if __CUDA_ARCH__>=200
+                        //    printf("%d : x1[%d] = sharedMem[%d][%d] | x1[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
+                        //#endif
                     }
                 }
             }
