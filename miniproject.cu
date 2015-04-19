@@ -286,48 +286,47 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x0[i];
+                    #if __CUDA_ARCH__>=200
+                        printf("%d : sharedMem[%d][%d] = x0[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x0[i]);
+                    #endif
                 }
             } else { // x1 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x1[i];
+                    #if __CUDA_ARCH__>=200
+                        printf("%d : sharedMem[%d][%d] = x1[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x1[i]);
+                    #endif
                 }
             }
-
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is writing on memory\n", id);
-            #endif
 
             __syncthreads();
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
-            
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is reading on memory\n", id);
-            #endif
-
-            #if __CUDA_ARCH__>=200
-                printf("%d %f\n", id, device_objectiveFunction(sharedMem[id]));
-            #endif
 
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x0[i] = sharedMem[id][i];
+                        #if __CUDA_ARCH__>=200
+                            printf("%d : x0[%d] = sharedMem[%d][%d] | x0[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
+                        #endif
                     }
                 }
             } else { // x1 is the worst
                 if (device_objectiveFunction(x1) > device_objectiveFunction(sharedMem[id])) { // x1 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x1[i] = sharedMem[id][i];
+                        #if __CUDA_ARCH__>=200
+                            printf("%d : x1[%d] = sharedMem[%d][%d] | x1[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
+                        #endif
                     }
                 }
             }
-            
         }
     }
-    
+
     __syncthreads();
-    
+
     // put the best individual on the shared memory
 
     if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
