@@ -247,6 +247,9 @@ __device__ float device_objectiveFunction (float * x) {
 __device__ void device_initialSolution (curandState * state, float * x) {
     for (int i = 0; i < N; i++) {
         x[i] = device_randomUniform(state, L, U);
+        #if __CUDA_ARCH__>=200
+            printf("%d : initialSolution = %f\n", id, x[i]);
+        #endif
     }
 }
 
