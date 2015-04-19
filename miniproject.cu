@@ -262,6 +262,8 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
 
     __shared__ float sharedMem[GRIDSIZE*BLOCKSIZE][N];
 
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+
     float x0[N];
     float x1[N];
     device_initialSolution(state, x0);
