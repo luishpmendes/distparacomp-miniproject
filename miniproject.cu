@@ -157,9 +157,6 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
     #if __CUDA_ARCH__>=200
         printf("%d : pre-randomUniform = %f\n", id, result);
     #endif
-    #if __CUDA_ARCH__>=200
-        printf("%d : a = %f b = %f\n", id, a, b);
-    #endif
     float min, max;
     if (a < b) {
         min = a;
@@ -173,14 +170,8 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
         printf("%d : diff = %f\n", id, diff);
     #endif
     result *= diff;
-    #if __CUDA_ARCH__>=200
-        printf("%d : med-randomUniform = %f\n", id, result);
-    #endif
     result += min;
     state[id] = localState;
-    #if __CUDA_ARCH__>=200
-        printf("%d : randomUniform = %f\n", id, result);
-    #endif
     return result;
 }
 
@@ -272,9 +263,6 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
 
 __global__ void device_setup(curandState * state, unsigned long seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
-    //#if __CUDA_ARCH__>=200
-    //    printf("seed = %d\n", seed);
-    //#endif
     curand_init(seed, id, 0, &state[id]);
 }
 
@@ -290,34 +278,11 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
     device_initialSolution(state, x0);
     device_initialSolution(state, x1);
 
-    //#if __CUDA_ARCH__>=200
-    //    printf("%d : x0 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], x0[6], x0[7], x0[8], x0[9], x0[10], x0[11], x0[12], x0[13], x0[14], x0[15]);
-    //#endif
-
-    //#if __CUDA_ARCH__>=200
-    //    printf("%d : x1 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x1[0], x1[1], x1[2], x1[3], x1[4], x1[5], x1[6], x1[7], x1[8], x1[9], x1[10], x1[11], x1[12], x1[13], x1[14], x1[15]);
-    //#endif
-
     for (int t = 0; t < T; t++) {
-
-        //#if __CUDA_ARCH__>=200
-        //    printf("%d : x0 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], x0[6], x0[7], x0[8], x0[9], x0[10], x0[11], x0[12], x0[13], x0[14], x0[15]);
-        //#endif
-
-        //#if __CUDA_ARCH__>=200
-        //    printf("%d : x1 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x1[0], x1[1], x1[2], x1[3], x1[4], x1[5], x1[6], x1[7], x1[8], x1[9], x1[10], x1[11], x1[12], x1[13], x1[14], x1[15]);
-        //#endif
-
         float h[N];
         device_crossover(state, h, x0, x1);
-        //#if __CUDA_ARCH__>=200
-        //    printf("%d : h = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8], h[9], h[10], h[11], h[12], h[13], h[14], h[15]);
-        //#endif
         float y[N];
         device_mutation(state, y, h);
-        //#if __CUDA_ARCH__>=200
-        //    printf("%d : y = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7], y[8], y[9], y[10], y[11], y[12], y[13], y[14], y[15]);
-        //#endif
         if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) {
             if (device_objectiveFunction(x0) > device_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
@@ -337,31 +302,17 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
 
             // send best indvidual to the next thread through the shared memory
 
-            //#if __CUDA_ARCH__>=200
-            //    printf("%d : writing\n", id);
-            //#endif
-
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x0[i];
-                    //#if __CUDA_ARCH__>=200
-                    //    printf("%d : sharedMem[%d][%d] = x0[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x0[i]);
-                    //#endif
                 }
             } else { // x1 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x1[i];
-                    //#if __CUDA_ARCH__>=200
-                    //    printf("%d : sharedMem[%d][%d] = x1[%d] | sharedMem[%d][%d] = %f\n", id, (id+1)%GRIDSIZE*BLOCKSIZE, i, i, (id+1)%GRIDSIZE*BLOCKSIZE, i, x1[i]);
-                    //#endif
                 }
             }
 
             __syncthreads();
-
-            //#if __CUDA_ARCH__>=200
-            //    printf("%d : reading\n", id);
-            //#endif
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
 
@@ -369,18 +320,12 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x0[i] = sharedMem[id][i];
-                        //#if __CUDA_ARCH__>=200
-                        //    printf("%d : x0[%d] = sharedMem[%d][%d] | x0[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
-                        //#endif
                     }
                 }
             } else { // x1 is the worst
                 if (device_objectiveFunction(x1) > device_objectiveFunction(sharedMem[id])) { // x1 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x1[i] = sharedMem[id][i];
-                        //#if __CUDA_ARCH__>=200
-                        //    printf("%d : x1[%d] = sharedMem[%d][%d] | x1[%d] = %f\n", id, i, id, i, i, sharedMem[id][i]);
-                        //#endif
                     }
                 }
             }
