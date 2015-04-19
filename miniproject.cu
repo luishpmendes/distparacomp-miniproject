@@ -400,8 +400,9 @@ int main (int argc, char** argv) {
     float * deviceSolution;
     cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
+    unsigned int auxMemSize = sizeof(float);
     float * deviceAux;
-    cutilSafeCall(cudaMalloc((void**) &deviceAux, sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**) &deviceAux, auxMemSize));
     float * hostAux;
 
     // set up kernel for execution
@@ -415,7 +416,7 @@ int main (int argc, char** argv) {
 
         device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), deviceAux);
 
-        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, sizeof(float), cudaMemcpyDeviceToHost));
+        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, auxMemSize, cudaMemcpyDeviceToHost));
         printf("aux = %f\n", *hostAux);
 
         // check if kernel execution generated and error
