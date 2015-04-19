@@ -378,7 +378,7 @@ int main (int argc, char** argv) {
     hostAverageSolutionValue /= R;
     hostAverageSolutionTime /= R;
 
-    printf("Host objective function value : %f\n", hostAverageSolutionValue);
+    printf("Host objective function value: %f\n", hostAverageSolutionValue);
     printf("Host time: %f s\n", hostAverageSolutionTime);
     printf("Device objective function value: %f\n", deviceAverageSolutionValue);
     printf("Device time: %f s\n", deviceAverageSolutionTime);
