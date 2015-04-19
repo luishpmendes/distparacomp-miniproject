@@ -174,9 +174,9 @@ __device__ int device_randInt (curandState * state, int a, int b) {
     curandState localState = state[id];
     int result;
     if (a <= b) {
-        result = a + curand(state) % (b - a);
+        result = a + curand(&localState) % (b - a);
     } else {
-        result = b + curand(state) % (a - b);
+        result = b + curand(&localState) % (a - b);
     }
     state[id] = localState;
     return result;
