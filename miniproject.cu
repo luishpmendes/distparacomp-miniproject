@@ -8,14 +8,14 @@
 #include "cutil_inline.h"
 #include <curand_kernel.h>
 
-#define GRIDSIZE 2
-#define BLOCKSIZE 2
+#define GRIDSIZE 4
+#define BLOCKSIZE 4
 #define N 16
 #define L -128.0
 #define U 128.0
 #define T 4096
 #define TAU 64
-#define R 16
+#define R 1
 
 using namespace std;
 
@@ -304,7 +304,6 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             
             #if __CUDA_ARCH__>=200
                 printf("thread %d is reading on memory\n", id);
-                printf("%d %f\n", id, device_objectiveFunction(sharedMem[id]));
             #endif
 
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
