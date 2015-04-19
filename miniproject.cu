@@ -13,8 +13,8 @@
 #define N 10
 #define L -100.0
 #define U 100.0
-#define T 1000
-#define TAU 200
+#define T 100
+#define TAU 10
 #define R 2
 
 using namespace std;
@@ -250,7 +250,7 @@ __device__ void device_crossover (curandState * state, float * h, float * x0, fl
     for (int i = 0; i < N; i++) {
         h[i] = device_randomUniform(state, x0[i], x1[i]);
         #if __CUDA_ARCH__>=200
-            printf("%d : crossover = %f\n", id, h[i]);
+            printf("%d : crossover of %f and %f = %f\n", id, x0[i], x1[i], h[i]);
         #endif
     }
 }
