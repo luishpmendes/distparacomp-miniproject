@@ -255,10 +255,6 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
 
-    #if __CUDA_ARCH__>=200
-        printf("id = %d\n", id);
-    #endif
-
     float x0[N];
     float x1[N];
     device_initialSolution(&state, x0);
@@ -288,24 +284,12 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             __syncthreads();
 
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
-                if (id < GRIDSIZE*BLOCKSIZE - 1) {
-                    for (int i = 0; i < N; i++) {
-                        sharedMem[id+1][i] = x0[i];
-                    }
-                } else { // last thread sends to first one
-                    for (int i = 0; i < N; i++) {
-                        sharedMem[0][i] = x0[i];
-                    }
+                for (int i = 0; i < N; i++) {
+                    sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x0[i];
                 }
             } else { // x1 is the best
-                if (id < GRIDSIZE*BLOCKSIZE - 1) {
-                    for (int i = 0; i < N; i++) {
-                        sharedMem[id+1][i] = x1[i];
-                    }
-                } else { // last thread sends to first one
-                    for (int i = 0; i < N; i++) {
-                        sharedMem[0][i] = x1[i];
-                    }
+                for (int i = 0; i < N; i++) {
+                    sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x1[i];
                 }
             }
             
@@ -315,6 +299,9 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             // it should be something like this:
             
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
+                #if __CUDA_ARCH__>=200
+                    printf("%d %f\n", id, device_objectiveFunction(sharedMem[id]));
+                #endif
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
                     for (int i = 0; i < N; i++) {
                         x0[i] = sharedMem[id][i];
