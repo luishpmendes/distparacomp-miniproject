@@ -44,7 +44,7 @@ int host_randInt (int a, int b) {
     }
     return result;
 }
-/*
+
 //Sphere function
 float host_objectiveFunction (float * x) {
     float result = 0.0;
@@ -53,9 +53,8 @@ float host_objectiveFunction (float * x) {
     }
     return result;
 }
-*/
 
-
+/*
 float host_objectiveFunction (float * x) {
     float result = 0;
     for (int i = 0; i < N; i++) {
@@ -65,7 +64,7 @@ float host_objectiveFunction (float * x) {
     }
     return result;
 }
-
+*/
 /*
 //Griewank Function
 float host_objectiveFunction (float * x) {
@@ -182,7 +181,7 @@ __device__ int device_randInt (curandState * state, int a, int b) {
     state[id] = localState;
     return result;
 }
-/*
+
 //Sphere function
 __device__ float device_objectiveFunction (float * x) {
     float result = 0.0;
@@ -191,9 +190,8 @@ __device__ float device_objectiveFunction (float * x) {
     }
     return result;
 }
-*/
 
-
+/*
 __device__ float device_objectiveFunction (float * x) {
     float result = 0;
     for (int i = 0; i < N; i++) {
@@ -203,7 +201,7 @@ __device__ float device_objectiveFunction (float * x) {
     }
     return result;
 }
-
+*/
 /*
 //Griewank Function
 __device__ float device_objectiveFunction (float * x) {
