@@ -261,11 +261,11 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     device_initialSolution(&state, x1);
 
     #if __CUDA_ARCH__>=200
-        printf("%d : x0 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", id, x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], x0[6], x0[7], x0[8], x0[9], x0[10], x0[11], x0[12], x0[13], x0[14], x0[15]);
+        printf("%d : x0 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x0[0], x0[1], x0[2], x0[3], x0[4], x0[5], x0[6], x0[7], x0[8], x0[9], x0[10], x0[11], x0[12], x0[13], x0[14], x0[15]);
     #endif
 
     #if __CUDA_ARCH__>=200
-        printf("%d : x1 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", id, x1[0], x1[1], x1[2], x1[3], x1[4], x1[5], x1[6], x1[7], x1[8], x1[9], x1[10], x1[11], x1[12], x1[13], x1[14], x1[15]);
+        printf("%d : x1 = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, x1[0], x1[1], x1[2], x1[3], x1[4], x1[5], x1[6], x1[7], x1[8], x1[9], x1[10], x1[11], x1[12], x1[13], x1[14], x1[15]);
     #endif
     for (int t = 0; t < T; t++) {
         float h[N];
