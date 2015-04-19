@@ -283,6 +283,8 @@ __global__ void device_findOptimum (curandState * state, float * solution) {
     device_initialSolution(state, x0);
     device_initialSolution(state, x1);
 
+    __syncthreads();
+
     for (int t = 0; t < T; t++) {
         float h[N];
         device_crossover(state, h, x0, x1);
