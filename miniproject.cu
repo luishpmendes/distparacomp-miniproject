@@ -270,8 +270,14 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     for (int t = 0; t < T; t++) {
         float h[N];
         device_crossover(&state, h, x0, x1);
+        #if __CUDA_ARCH__>=200
+            printf("%d : h = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8], h[9], h[10], h[11], h[12], h[13], h[14], h[15]);
+        #endif
         float y[N];
         device_mutation(&state, y, h);
+        #if __CUDA_ARCH__>=200
+            printf("%d : y = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7], y[8], y[9], y[10], y[11], y[12], y[13], y[14], y[15]);
+        #endif
         if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) {
             if (device_objectiveFunction(x0) > device_objectiveFunction(y)) {
                 for (int i = 0; i < N; i++) {
