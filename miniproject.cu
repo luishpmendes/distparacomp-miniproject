@@ -400,6 +400,10 @@ int main (int argc, char** argv) {
     float * deviceSolution;
     cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
+    float * deviceAux;
+    cutilSafeCall(cudaMalloc((void**) &aux, sizeof(float)));
+    float * hostAux;
+
     // set up kernel for execution
     printf("Run %d Kernels.\n\n", R);
 
@@ -409,11 +413,10 @@ int main (int argc, char** argv) {
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
 
-        float aux = 0;
+        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), deviceAux);
 
-        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), &aux);
-
-        printf("aux = %f\n", aux);
+        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, sizeof(float), cudaMemcpyDeviceToHost));
+        printf("aux = %f\n", *hostAux);
 
         // check if kernel execution generated and error
         cutilCheckMsg("Kernel execution failed");
