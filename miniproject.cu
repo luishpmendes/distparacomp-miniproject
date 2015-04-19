@@ -7,14 +7,14 @@
 #include "cutil_inline.h"
 #include <curand_kernel.h>
 
-#define GRIDSIZE 64
+#define GRIDSIZE 16
 #define BLOCKSIZE 16
 #define N 16
 #define L -128.0
 #define U 128.0
 #define T 4096
 #define TAU 64
-#define R 8
+#define R 16
 
 using namespace std;
 
