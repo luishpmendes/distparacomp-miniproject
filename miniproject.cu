@@ -154,9 +154,9 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curandState localState = state[id];
     float result = curand_uniform(&localState);
-    #if __CUDA_ARCH__>=200
-        printf("%d : pre-randomUniform = %f\n", id, result);
-    #endif
+    //#if __CUDA_ARCH__>=200
+    //    printf("%d : pre-randomUniform = %f\n", id, result);
+    //#endif
     float min, max;
     if (a < b) {
         min = a;
@@ -166,9 +166,9 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
         max = a;
     }
     float diff = max - min;
-    #if __CUDA_ARCH__>=200
-        printf("%d : diff = %f\n", id, diff);
-    #endif
+    //#if __CUDA_ARCH__>=200
+    //    printf("%d : diff = %f\n", id, diff);
+    //#endif
     result *= diff;
     result += min;
     state[id] = localState;
@@ -236,10 +236,11 @@ __device__ float device_objectiveFunction (float * x) {
 }
 
 __device__ void device_initialSolution (curandState * state, float * x) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
     for (int i = 0; i < N; i++) {
         x[i] = device_randomUniform(state, L, U);
         #if __CUDA_ARCH__>=200
-            printf("%d : initialSolution = %f\n", blockIdx.x * blockDim.x + threadIdx.x, x[i]);
+            printf("%d : initialSolution = %f\n", id, x[i]);
         #endif
     }
 }
