@@ -246,19 +246,22 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
     }
 }
 
-__global__ void device_findOptimum (float * solution, unsigned int seed) {
+__global__ void device_setup(curandState * state, unsigned long seed) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    curand_init(seed, id, 0, &state[id]);
+}
+
+__global__ void device_findOptimum (curandState * state, float * solution) {
     // initialize shared mem
 
     __shared__ float sharedMem[GRIDSIZE*BLOCKSIZE][N];
 
-    curandState state;
     int id = blockIdx.x * blockDim.x + threadIdx.x;
-    curand_init(seed, id, 0, &state);
 
     float x0[N];
     float x1[N];
-    device_initialSolution(&state, x0);
-    device_initialSolution(&state, x1);
+    device_initialSolution(&state[id], x0);
+    device_initialSolution(&state[id], x1);
 
     for (int t = 0; t < T; t++) {
 
@@ -271,12 +274,12 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
         #endif
 
         float h[N];
-        device_crossover(&state, h, x0, x1);
+        device_crossover(&state[id], h, x0, x1);
         #if __CUDA_ARCH__>=200
             printf("%d : h = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], h[8], h[9], h[10], h[11], h[12], h[13], h[14], h[15]);
         #endif
         float y[N];
-        device_mutation(&state, y, h);
+        device_mutation(&state[id], y, h);
         #if __CUDA_ARCH__>=200
             printf("%d : y = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f \n", id, y[0], y[1], y[2], y[3], y[4], y[5], y[6], y[7], y[8], y[9], y[10], y[11], y[12], y[13], y[14], y[15]);
         #endif
@@ -429,7 +432,12 @@ int main (int argc, char** argv) {
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
 
-        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
+        curandState * deviceState;
+        cudaMalloc(&deviceState, GRIDSIZE*BLOCKSIZE*sizeof(curandState));
+
+        device_setup<<<GRIDSIZE, BLOCKSIZE>>>(deviceState, time(NULL));
+
+        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceState, deviceSolution);
 
         // check if kernel execution generated and error
         cutilCheckMsg("Kernel execution failed");
