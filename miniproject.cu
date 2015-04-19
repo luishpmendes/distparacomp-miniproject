@@ -401,7 +401,7 @@ int main (int argc, char** argv) {
     cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
     float * deviceAux;
-    cutilSafeCall(cudaMalloc((void**) &aux, sizeof(float)));
+    cutilSafeCall(cudaMalloc((void**) &deviceAux, sizeof(float)));
     float * hostAux;
 
     // set up kernel for execution
