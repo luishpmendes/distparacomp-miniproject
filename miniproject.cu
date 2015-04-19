@@ -9,7 +9,7 @@
 #include <curand_kernel.h>
 
 #define GRIDSIZE 1
-#define BLOCKSIZE 128
+#define BLOCKSIZE 16
 #define N 16
 #define L -128.0
 #define U 128.0
