@@ -249,7 +249,7 @@ __device__ void device_crossover (curandState * state, float * h, float * x0, fl
     for (int i = 0; i < N; i++) {
         h[i] = device_randomUniform(state, x0[i], x1[i]);
         #if __CUDA_ARCH__>=200
-            printf("%d : crossover = %f\n", id, x[i]);
+            printf("%d : crossover = %f\n", id, h[i]);
         #endif
     }
 }
