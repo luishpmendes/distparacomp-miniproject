@@ -157,6 +157,9 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
     #if __CUDA_ARCH__>=200
         printf("%d : pre-randomUniform = %f\n", id, result);
     #endif
+    #if __CUDA_ARCH__>=200
+        printf("%d : a = %f b = %f\n", id, a, b);
+    #endif
     float min, max;
     if (a < b) {
         min = a;
@@ -166,6 +169,9 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
         max = a;
     }
     float diff = max - min;
+    #if __CUDA_ARCH__>=200
+        printf("%d : diff = %f\n", id, diff);
+    #endif
     result *= diff;
     #if __CUDA_ARCH__>=200
         printf("%d : med-randomUniform = %f\n", id, result);
