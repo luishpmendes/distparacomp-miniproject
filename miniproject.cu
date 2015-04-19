@@ -299,6 +299,10 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
 
             // send best indvidual to the next thread through the shared memory
 
+            #if __CUDA_ARCH__>=200
+                printf("%d : writing\n", id);
+            #endif
+
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
                 for (int i = 0; i < N; i++) {
                     sharedMem[(id+1)%GRIDSIZE*BLOCKSIZE][i] = x0[i];
@@ -316,6 +320,10 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             }
 
             __syncthreads();
+
+            #if __CUDA_ARCH__>=200
+                printf("%d : reading\n", id);
+            #endif
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
 
