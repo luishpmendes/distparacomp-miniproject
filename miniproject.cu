@@ -423,6 +423,7 @@ int main (int argc, char** argv) {
 
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
+        printf("sol = %f\n", hostDeviceSolution[0]);
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
     }
 
@@ -461,9 +462,9 @@ int main (int argc, char** argv) {
     hostAverageSolutionTime /= R;
 
     printf("Host objective function value : %f\n", hostAverageSolutionValue);
-    printf("Host time: %fs\n", hostAverageSolutionTime);
+    printf("Host time: %f s\n", hostAverageSolutionTime);
     printf("Device objective function value: %f\n", deviceAverageSolutionValue);
-    printf("Device time: %fs\n", deviceAverageSolutionTime);
+    printf("Device time: %f s\n", deviceAverageSolutionTime);
 
     // clean up memory
     cutilSafeCall(cudaFree(deviceSolution));
