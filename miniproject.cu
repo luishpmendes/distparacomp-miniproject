@@ -7,8 +7,8 @@
 #include "cutil_inline.h"
 #include <curand_kernel.h>
 
-#define GRIDSIZE 2
-#define BLOCKSIZE 2
+#define GRIDSIZE 16
+#define BLOCKSIZE 8
 #define N 16
 #define L -128.0
 #define U 128.0
@@ -253,6 +253,8 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     curandState state;
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
+
+    printf("id = %d\n", id);
 
     float x0[N];
     float x1[N];
