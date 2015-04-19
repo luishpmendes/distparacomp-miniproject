@@ -416,9 +416,6 @@ int main (int argc, char** argv) {
 
         device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), deviceAux);
 
-        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, auxMemSize, cudaMemcpyDeviceToHost));
-        printf("aux = %f\n", *hostAux);
-
         // check if kernel execution generated and error
         cutilCheckMsg("Kernel execution failed");
 
@@ -433,6 +430,9 @@ int main (int argc, char** argv) {
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
+
+        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, auxMemSize, cudaMemcpyDeviceToHost));
+        printf("aux = %f\n", *hostAux);
     }
 
     float deviceAverageSolutionValue = 0.0;
