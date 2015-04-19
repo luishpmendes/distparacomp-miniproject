@@ -6,7 +6,7 @@
 #include <vector>
 #include "cutil_inline.h"
 #include <curand_kernel.h>
-#include "cuPrintf.cu"
+#include "cuPrintf.h"
 
 #define GRIDSIZE 16
 #define BLOCKSIZE 8
