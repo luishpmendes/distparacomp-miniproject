@@ -154,6 +154,9 @@ __device__ float device_randomUniform (curandState * state, float a, float b) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curandState localState = state[id];
     float result = curand_uniform(&localState);
+    #if __CUDA_ARCH__>=200
+        printf("%d : pre-randomUniform = %f\n", id, result);
+    #endif
     float min, max;
     if (a < b) {
         min = a;
