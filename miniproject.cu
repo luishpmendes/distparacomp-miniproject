@@ -212,7 +212,7 @@ __device__ float device_objectiveFunction (float * x) {
     float prod = 1;
     for (int i = 0; i < N; i++) {
         sum += x[i] * x[i];
-        prod *= cosf(x[i]/sqrt(i+1));
+        prod *= cosf(x[i]/sqrtf(i+1));
     }
     sum /= 4000;
     result += sum;
