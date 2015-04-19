@@ -8,8 +8,8 @@
 #include "cutil_inline.h"
 #include <curand_kernel.h>
 
-#define GRIDSIZE 1
-#define BLOCKSIZE 8
+#define GRIDSIZE 2
+#define BLOCKSIZE 2
 #define N 16
 #define L -128.0
 #define U 128.0
@@ -293,19 +293,19 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
                 }
             }
 
-            //#if __CUDA_ARCH__>=200
-            //    printf("thread %d is writing on memory\n", id);
-            //#endif
+            #if __CUDA_ARCH__>=200
+                printf("thread %d is writing on memory\n", id);
+            #endif
 
             __syncthreads();
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
             // it should be something like this:
             
-            //#if __CUDA_ARCH__>=200
-            //    printf("thread %d is reading on memory\n", id);
-            //    printf("%d %f\n", id, device_objectiveFunction(sharedMem[id]));
-            //#endif
+            #if __CUDA_ARCH__>=200
+                printf("thread %d is reading on memory\n", id);
+                printf("%d %f\n", id, device_objectiveFunction(sharedMem[id]));
+            #endif
 
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
