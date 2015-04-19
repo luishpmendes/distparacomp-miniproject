@@ -9,13 +9,13 @@
 #include <curand_kernel.h>
 
 #define GRIDSIZE 1
-#define BLOCKSIZE 10
-#define N 10
-#define L -100.0
-#define U 100.0
-#define T 5000
-#define TAU 200
-#define R 25
+#define BLOCKSIZE 256
+#define N 16
+#define L -128.0
+#define U 128.0
+#define T 4096
+#define TAU 64
+#define R 32
 
 using namespace std;
 
