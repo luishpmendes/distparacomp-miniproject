@@ -246,6 +246,7 @@ __device__ void device_initialSolution (curandState * state, float * x) {
 }
 
 __device__ void device_crossover (curandState * state, float * h, float * x0, float * x1) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
     for (int i = 0; i < N; i++) {
         h[i] = device_randomUniform(state, x0[i], x1[i]);
         #if __CUDA_ARCH__>=200
