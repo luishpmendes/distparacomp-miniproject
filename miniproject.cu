@@ -254,6 +254,9 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
 
 __global__ void device_setup (curandState * state, unsigned long seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
+    #if __CUDA_ARCH__>=200
+        printf("seed = %d\n", seed);
+    #endif
     curand_init(seed, id, 0, &state[id]);
 }
 
