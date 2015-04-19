@@ -13,9 +13,9 @@
 #define N 10
 #define L -100.0
 #define U 100.0
-#define T 10
-#define TAU 2
-#define R 2
+#define T 5000
+#define TAU 200
+#define R 25
 
 using namespace std;
 
@@ -429,10 +429,6 @@ int main (int argc, char** argv) {
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
-    
-        for (int i = 0; i < N; ++i){
-            printf("solution[%d] = %f%s\n", i, hostDeviceSolution[i]);
-        }
     }
 
     float deviceAverageSolutionValue = 0.0;
