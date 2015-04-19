@@ -245,7 +245,7 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
     }
 }
 
-__global__ void device_findOptimum (float * solution, unsigned int seed, float * aux) {
+__global__ void device_findOptimum (float * solution, unsigned int seed) {
     // initialize shared mem
 
     __shared__ float sharedMem[GRIDSIZE*BLOCKSIZE][N];
@@ -253,8 +253,6 @@ __global__ void device_findOptimum (float * solution, unsigned int seed, float *
     curandState state;
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     curand_init(seed, id, 0, &state);
-
-    *aux = *aux + 1;
 
     float x0[N];
     float x1[N];
@@ -400,11 +398,6 @@ int main (int argc, char** argv) {
     float * deviceSolution;
     cutilSafeCall(cudaMalloc((void**) &deviceSolution, solutionMemSize));
 
-    unsigned int auxMemSize = sizeof(float);
-    float * deviceAux;
-    cutilSafeCall(cudaMalloc((void**) &deviceAux, auxMemSize));
-    float * hostAux;
-
     // set up kernel for execution
     printf("Run %d Kernels.\n\n", R);
 
@@ -414,7 +407,7 @@ int main (int argc, char** argv) {
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
 
-        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL), deviceAux);
+        device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceSolution, time(NULL));
 
         // check if kernel execution generated and error
         cutilCheckMsg("Kernel execution failed");
@@ -430,9 +423,6 @@ int main (int argc, char** argv) {
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
-
-        cutilSafeCall(cudaMemcpy(hostAux, deviceAux, auxMemSize, cudaMemcpyDeviceToHost));
-        printf("aux = %f\n", *hostAux);
     }
 
     float deviceAverageSolutionValue = 0.0;
