@@ -7,8 +7,8 @@
 #include "cutil_inline.h"
 #include <curand_kernel.h>
 
-#define GRIDSIZE 16
-#define BLOCKSIZE 8
+#define GRIDSIZE 2
+#define BLOCKSIZE 2
 #define N 16
 #define L -128.0
 #define U 128.0
@@ -354,8 +354,7 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             }
         }
         for (int i = 0; i < N; i++) {
-            //solution[i] = sharedMem[idBest][i];
-            solution[i] = idBest;
+            solution[i] = sharedMem[idBest][i];
         }
     }
     
