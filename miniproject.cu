@@ -9,13 +9,13 @@
 #include <curand_kernel.h>
 
 #define GRIDSIZE 1
-#define BLOCKSIZE 4
+#define BLOCKSIZE 256
 #define N 16
 #define L -128.0
 #define U 128.0
-#define T 1024
+#define T 4096
 #define TAU 64
-#define R 1
+#define R 8
 
 using namespace std;
 
@@ -278,10 +278,10 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             }
         }
         if (t % TAU) {
-            // send best indvidual to the next thread through the shared memory
-            // it should be something like this:
-            
+
             __syncthreads();
+
+            // send best indvidual to the next thread through the shared memory
 
             if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
                 for (int i = 0; i < N; i++) {
@@ -293,18 +293,17 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
                 }
             }
 
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is writing on memory\n", id);
-            #endif
+            //#if __CUDA_ARCH__>=200
+            //    printf("thread %d is writing on memory\n", id);
+            //#endif
 
             __syncthreads();
 
             // get the individual from previous thread and replace worst individual if it is worse than the received one
-            // it should be something like this:
             
-            #if __CUDA_ARCH__>=200
-                printf("thread %d is reading on memory\n", id);
-            #endif
+            //#if __CUDA_ARCH__>=200
+            //    printf("thread %d is reading on memory\n", id);
+            //#endif
 
             if (device_objectiveFunction(x0) > device_objectiveFunction(x1)) { // x0 is the worst
                 if (device_objectiveFunction(x0) > device_objectiveFunction(sharedMem[id])) { // x0 is worse than the received one
@@ -322,11 +321,11 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
             
         }
     }
-    // put the best individual on the shared memory
-    // it should be something like this:
-
+    
     __syncthreads();
     
+    // put the best individual on the shared memory
+
     if (device_objectiveFunction(x0) < device_objectiveFunction(x1)) { // x0 is the best
         for (int i = 0; i < N; i++) {
             sharedMem[id][i] = x0[i];
@@ -341,7 +340,6 @@ __global__ void device_findOptimum (float * solution, unsigned int seed) {
     __syncthreads();
 
     // delegate the task of picking the best of the best to thread zero
-    // it should be something like this:
     
     if (id == 0) {
         int idBest = 0;
