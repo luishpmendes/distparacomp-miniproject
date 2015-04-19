@@ -66,7 +66,7 @@ float host_objectiveFunction (float * x) {
     return result;
 }
 */
-/*
+
 //Griewank Function
 float host_objectiveFunction (float * x) {
     float result = 1;
@@ -81,7 +81,8 @@ float host_objectiveFunction (float * x) {
     result -= prod;
     return result;
 }
-*/
+
+/*
 //Rastrigin Function
 float host_objectiveFunction (float * x) {
     float result = 10*N;
@@ -91,7 +92,7 @@ float host_objectiveFunction (float * x) {
     }
     return result;
 }
-
+*/
 void host_initialSolution (float * x) {
     for (int i = 0; i < N; i++) {
         x[i] = host_randomUniform(L, U);
@@ -203,7 +204,7 @@ __device__ float device_objectiveFunction (float * x) {
     return result;
 }
 */
-/*
+
 //Griewank Function
 __device__ float device_objectiveFunction (float * x) {
     float result = 1;
@@ -218,7 +219,8 @@ __device__ float device_objectiveFunction (float * x) {
     result -= prod;
     return result;
 }
-*/
+
+/*
 //Rastrigin Function
 __device__ float device_objectiveFunction (float * x) {
     float result = 10*N;
@@ -228,6 +230,7 @@ __device__ float device_objectiveFunction (float * x) {
     }
     return result;
 }
+*/
 
 __device__ void device_initialSolution (curandState * state, float * x) {
     for (int i = 0; i < N; i++) {
