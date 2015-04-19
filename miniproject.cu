@@ -13,8 +13,8 @@
 #define N 10
 #define L -100.0
 #define U 100.0
-#define T 100
-#define TAU 10
+#define T 10
+#define TAU 2
 #define R 2
 
 using namespace std;
