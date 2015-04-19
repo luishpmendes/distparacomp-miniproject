@@ -252,7 +252,7 @@ __device__ void device_mutation (curandState * state, float * y, float * x) {
     }
 }
 
-__global__ void device_setup (curandState * state, unsigned long seed) {
+__global__ void device_setup(curandState * state, unsigned long seed) {
     int id = blockIdx.x * blockDim.x + threadIdx.x;
     #if __CUDA_ARCH__>=200
         printf("seed = %d\n", seed);
@@ -440,12 +440,15 @@ int main (int argc, char** argv) {
     printf("Run %d Kernels.\n\n", R);
 
     for (int r = 0; r < R; r++) {
+        device_setup<<<GRIDSIZE, BLOCKSIZE>>>(deviceStates, time(NULL));
+
+        cudaThreadSynchronize();
+
         float hostDeviceSolution[N];
         unsigned int timer = 0;
         cutilCheckError(cutCreateTimer(&timer));
         cutilCheckError(cutStartTimer(timer));
 
-        device_setup<<<GRIDSIZE, BLOCKSIZE>>>(deviceStates, time(NULL));
         device_findOptimum<<<GRIDSIZE, BLOCKSIZE>>>(deviceStates, deviceSolution);
 
         // check if kernel execution generated and error
