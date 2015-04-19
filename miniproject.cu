@@ -418,10 +418,10 @@ int main (int argc, char** argv) {
         // copy result from device to host
         cutilSafeCall(cudaMemcpy(hostDeviceSolution, deviceSolution, solutionMemSize, cudaMemcpyDeviceToHost));
         deviceSolutionValue[r] = host_objectiveFunction(hostDeviceSolution);
-    }
-
-    for (int i = 0; i < N; ++i){
-        printf("solution[%d] = %f%s\n", i, hostDeviceSolution[i]);
+    
+        for (int i = 0; i < N; ++i){
+            printf("solution[%d] = %f%s\n", i, hostDeviceSolution[i]);
+        }
     }
 
     float deviceAverageSolutionValue = 0.0;
