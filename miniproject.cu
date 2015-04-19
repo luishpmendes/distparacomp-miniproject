@@ -54,7 +54,7 @@ float host_objectiveFunction (float * x) {
     return result;
 }
 */
-/*
+
 
 float host_objectiveFunction (float * x) {
     float result = 0;
@@ -65,8 +65,8 @@ float host_objectiveFunction (float * x) {
     }
     return result;
 }
-*/
 
+/*
 //Griewank Function
 float host_objectiveFunction (float * x) {
     float result = 1;
@@ -81,7 +81,7 @@ float host_objectiveFunction (float * x) {
     result -= prod;
     return result;
 }
-
+*/
 /*
 //Rastrigin Function
 float host_objectiveFunction (float * x) {
@@ -192,7 +192,7 @@ __device__ float device_objectiveFunction (float * x) {
     return result;
 }
 */
-/*
+
 
 __device__ float device_objectiveFunction (float * x) {
     float result = 0;
@@ -203,8 +203,8 @@ __device__ float device_objectiveFunction (float * x) {
     }
     return result;
 }
-*/
 
+/*
 //Griewank Function
 __device__ float device_objectiveFunction (float * x) {
     float result = 1;
@@ -219,7 +219,7 @@ __device__ float device_objectiveFunction (float * x) {
     result -= prod;
     return result;
 }
-
+*/
 /*
 //Rastrigin Function
 __device__ float device_objectiveFunction (float * x) {
